@@ -217,5 +217,14 @@ class Card
     {
         return $this->image;
     }
+
+    public function getImageDirectory()
+    {
+        return __DIR__."/../../../web/upload/Cards/".$this->class."/".$this->image;
+    }
+    public function getWebDirectory()
+    {
+        return "/upload/Cards/".$this->class."/".$this->image;
+    }
 }
 
