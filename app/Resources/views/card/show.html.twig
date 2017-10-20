@@ -38,10 +38,10 @@
 
     <ul>
         <li>
-            <a href="{{ path('card_index') }}">Back to the list</a>
+            <a href="{{ path('admin_card_index') }}">Back to the list</a>
         </li>
         <li>
-            <a href="{{ path('card_edit', { 'id': card.id }) }}">Edit</a>
+            <a href="{{ path('admin_card_edit', { 'id': card.id }) }}">Edit</a>
         </li>
         <li>
             {{ form_start(delete_form) }}
