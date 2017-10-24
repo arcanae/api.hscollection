@@ -46,7 +46,7 @@ class UserController extends Controller
     {
         $data = $request->getContent();
         $user = $this->get('jms_serializer')->deserialize($data, 'AppBundle\Entity\User', 'json');
-        $user->setPassword(md5($user->getPassword()));
+        $user->setPassword("b0b".md5($user->getPassword()."ar21"));
         $user->setBalance(1000);
         $user->setAvatar("default.jpg");
         $user->setInventory([]);
@@ -76,7 +76,6 @@ class UserController extends Controller
     }
 
     /**
-     * Displays a form to edit an existing user entity.
      *
      * @Route("/{id}/edit", name="user_edit")
      * @Method({"POST"})
@@ -91,7 +90,7 @@ class UserController extends Controller
         $user = $em->getRepository(User::class)->find($editUser->getId());
 
         if($user->getPassword() != $editUser->getPassword()) {
-           $user->setPassword(md5($editUser->getPassword()));
+           $user->setPassword("b0b".md5($editUser->getPassword()."ar21"));
         }
         $user->setBalance($editUser->getBalance());
         $user->setAvatar($editUser->getAvatar());
@@ -101,4 +100,38 @@ class UserController extends Controller
 
         return new Response('Edited successfully', Response::HTTP_CREATED);
     }
+
+    /**
+     *
+     * @Route("/login", name="user_login")
+     * @Method({"POST"})
+     */
+
+    public function loginAction(Request $request) {    
+        $em = $this->getDoctrine()->getManager();
+        
+        $data = $request->getContent();
+        
+        $data = $this->get('jms_serializer')->deserialize($data, 'AppBundle\Entity\User', 'json');
+        
+        $user = $em->getRepository(User::class)->findOneByName($data->getName());
+        
+        if ($user !== null) {
+            if ("b0b".md5($data->getPassword()."ar21") === $user->getPassword()){
+                    $user->setToken(time().hash('sha256', $user->getName())."ar21");
+                
+                    $var = $this->get('jms_serializer')->serialize($user, 'json');
+                
+                    $response = new Response($var);
+                    $response->headers->set('Content-Type', 'application/json');
+                
+                    return $response;
+            } else {
+                    return new Response(null);        
+            }
+        } else {
+            return new Response(null);
+        }
+    }
 }
+            
