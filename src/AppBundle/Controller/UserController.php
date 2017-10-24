@@ -50,13 +50,19 @@ class UserController extends Controller
         $user->setBalance(1000);
         $user->setAvatar("default.jpg");
         $user->setInventory([]);
-
+        $user->setToken(time().hash('sha256', $user->getName()."ar21"));
+        
         $em = $this->getDoctrine()->getManager();
         $em->persist($user);
         $em->flush();
 
-        return new Response('Created successfully', Response::HTTP_CREATED);
-    
+        $obj = ["token"=>$user->getToken()];
+        $var = $this->get('jms_serializer')->serialize($obj, 'json');
+        
+        $response = new Response($var);
+        $response->headers->set('Content-Type', 'application/json');
+        
+        return $response;
     }
 
     /**
@@ -111,23 +117,25 @@ class UserController extends Controller
         $em = $this->getDoctrine()->getManager();
         
         $data = $request->getContent();
-        
         $data = $this->get('jms_serializer')->deserialize($data, 'AppBundle\Entity\User', 'json');
         
         $user = $em->getRepository(User::class)->findOneByName($data->getName());
         
         if ($user !== null) {
             if ("b0b".md5($data->getPassword()."ar21") === $user->getPassword()){
-                    $user->setToken(time().hash('sha256', $user->getName())."ar21");
+                $user->setToken(time().hash('sha256', $user->getName()."ar21"));
                 
-                    $var = $this->get('jms_serializer')->serialize($user, 'json');
+                $em->flush();
+        
+                $obj = ["token"=>$user->getToken()];
+                $var = $this->get('jms_serializer')->serialize($obj, 'json');
                 
-                    $response = new Response($var);
-                    $response->headers->set('Content-Type', 'application/json');
+                $response = new Response($var);
+                $response->headers->set('Content-Type', 'application/json');
                 
-                    return $response;
+                return $response;
             } else {
-                    return new Response(null);        
+                return new Response(null);        
             }
         } else {
             return new Response(null);
