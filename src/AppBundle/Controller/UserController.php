@@ -61,8 +61,8 @@ class UserController extends Controller
         
         $response = new Response($var);
         $response->headers->set('Content-Type', 'application/json');
-        $response->headers->set('Access-Control->Allow->Origin', '*');
-        $response->headers->set('Access-Control->Allow->Methods', 'GET,POST');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Access-Control-Allow-Methods', 'GET,POST');
         
         
         return $response;
