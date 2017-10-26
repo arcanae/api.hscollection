@@ -44,34 +44,62 @@ class UserController extends Controller
      */
     public function newAction(Request $request)
     {
+
+        $em = $this->getDoctrine()->getManager();
+                
         $data = $request->getContent();
         $user = $this->get('jms_serializer')->deserialize($data, 'AppBundle\Entity\User', 'json');
-        $user->setPassword("b0b".md5($user->getPassword()."ar21"));
-        $user->setBalance(1000);
-        $user->setAvatar("default.jpg");
-        $user->setInventory([]);
-        $user->setToken(time().hash('sha256', $user->getName()."ar21"));
         
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($user);
-        $em->flush();
+        $verifuser = $em->getRepository(User::class)->findOneByName($user->getName());
+        
+        if ($verifuser === null) {
 
-        $obj = ["token"=>$user->getToken()];
-        $var = $this->get('jms_serializer')->serialize($obj, 'json');
-        
-        $response = new Response($var);
-        $response->headers->set('Content-Type', 'application/json');
-        
-        return $response;
+            
+            $user->setPassword("b0b".md5($user->getPassword()."ar21"));
+            $user->setBalance(1000);
+            $user->setAvatar("default.jpg");
+            $user->setInventory([]);
+            $user->setToken(time().hash('sha256', $user->getName()."ar21"));
+            
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($user);
+            $em->flush();
+            
+            $obj = ["token"=>$user->getToken()];
+            $var = $this->get('jms_serializer')->serialize($obj, 'json');
+            
+            $response = new Response($var);
+            $response->headers->set('Content-Type', 'application/json');
+            
+            return $response;
+        } else {
+            return new Response (null);
+        }
     }
 
     /**
-     * Finds and displays a user entity.
+     * Finds and displays a user entity by id.
      *
      * @Route("/{id}", name="user_show")
      * @Method("GET")
      */
     public function showAction(User $user)
+    {
+        $data = $this->get('jms_serializer')->serialize($user, 'json');
+        
+        $response = new Response($data);
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
+    }
+
+    /**
+     * Finds and displays a user entity by token.
+     *
+     * @Route("/token/{token}", name="user_show_token")
+     * @Method("GET")
+     */
+    public function tokenShowAction(User $user)
     {
         $data = $this->get('jms_serializer')->serialize($user, 'json');
         
@@ -140,6 +168,36 @@ class UserController extends Controller
         } else {
             return new Response(null);
         }
+    }
+
+    /**
+     *
+     * @Route("/iflog", name="user_iflog")
+     * @Method({"POST"})
+     */
+
+    public function iflogAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        
+        $data = $request->getContent();
+        $data = $this->get('jms_serializer')->deserialize($data, 'AppBundle\Entity\User', 'json');
+        $user = $em->getRepository(User::class)->findOneByToken($data->getToken());
+        
+        if ($user !== null) {
+            $obj = ["iflog"=>true];
+            $var = $this->get('jms_serializer')->serialize($obj, 'json');
+            
+            $response = new Response($var);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        } else {
+            $obj = ["iflog"=>false];
+            $var = $this->get('jms_serializer')->serialize($obj, 'json');
+            
+            $response = new Response($var);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }            
     }
 }
             
