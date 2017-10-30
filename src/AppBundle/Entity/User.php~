@@ -223,28 +223,4 @@ class User
     {
         return $this->token;
     }
-
-    /**
-     * Add inventory
-     *
-     * @param \AppBundle\Entity\Card $inventory
-     *
-     * @return User
-     */
-    public function addInventory(\AppBundle\Entity\Card $inventory)
-    {
-        $this->inventory[] = $inventory;
-
-        return $this;
-    }
-
-    /**
-     * Remove inventory
-     *
-     * @param \AppBundle\Entity\Card $inventory
-     */
-    public function removeInventory(\AppBundle\Entity\Card $inventory)
-    {
-        $this->inventory->removeElement($inventory);
-    }
 }

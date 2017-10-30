@@ -199,5 +199,15 @@ class UserController extends Controller
             return $response;
         }            
     }
+
+    /**
+     *
+     * @Route("/addcard", name="user_addcard")
+     * @Method({"POST"})
+     */
+
+    public function addCardAction(Request $request) {
+        
+    }
 }
             
