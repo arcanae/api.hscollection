@@ -12,7 +12,6 @@
                 <th>Password</th>
                 <th>Avatar</th>
                 <th>Token</th>
-                <th>Inventory</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -25,7 +24,6 @@
                 <td>{{ user.password }}</td>
                 <td>{{ user.avatar }}</td>
                 <td>{{ user.token}}</td>
-                <td>{% if user.inventory %}{{ user.inventory|join(', ') }}{% endif %}</td>
                 <td>
                     <ul>
                         <li>

@@ -25,10 +25,6 @@
                 <th>Avatar</th>
                 <td>{{ user.avatar }}</td>
             </tr>
-            <tr>
-                <th>Inventory</th>
-                <td>{% if user.inventory %}{{ user.inventory|join(', ') }}{% endif %}</td>
-            </tr>
         </tbody>
     </table>
 

@@ -3,6 +3,8 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\User;
+use AppBundle\Entity\Card;
+use AppBundle\Entity\Cart;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -128,7 +130,6 @@ class UserController extends Controller
         }
         $user->setBalance($editUser->getBalance());
         $user->setAvatar($editUser->getAvatar());
-        $user->setInventory($editUser->getInventory());
 
         $em->flush();
 
@@ -207,7 +208,18 @@ class UserController extends Controller
      */
 
     public function addCardAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
         
+        $data = $request->getContent();
+        $data = $this->get('jms_serializer')->deserialize($data, 'AppBundle\Entity\User', 'json');        
+
+        $card = $em->getRepository(Card::class)->find($data->getId());
+        $user = $em->getRepository(User::class)->findOneByToken($data->getToken());
+        $user->addInventory($card);
+
+        $em->flush();
+
+        return new Response('Succesfully Added Card', Response::HTTP_CREATED);
     }
 }
             
